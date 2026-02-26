@@ -51,7 +51,7 @@ const CoinsContainer = () => {
         placeholder="Buscar criptomoneda" 
         ref={searchInput} 
         onChange={handleSearch}
-        className="w-full px-4 py-3 mb-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+        className="w-full px-4 py-3 mb-4 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-gray-100 placeholder-gray-500"
       />
       { coinsList.length > 0 ? <CoinsTable coins={coinsList} /> : <CoinsNotFound /> }
     </>
