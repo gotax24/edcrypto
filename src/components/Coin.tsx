@@ -1,34 +1,25 @@
-import { useState, useEffect } from "react"
-import type { CoinInterface } from "../interfaces/Coin"
-import { Link } from "react-router-dom"
-import { Star } from "lucide-react"
+import { use } from "react";
+import type { CoinInterface } from "../interfaces/Coin";
+import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
+import { FavoritesContext } from "../context/FavoriteContext";
 
-const Coin = ({id, name, symbol, current_price, image, price_change_percentage_24h}: CoinInterface) => {
+const Coin = ({
+  id,
+  name,
+  symbol,
+  current_price,
+  image,
+  price_change_percentage_24h,
+}: CoinInterface) => {
+  const { isFavorite, addFavorite, removeFavorite } = use(FavoritesContext);
 
-  const [isFavorite, setIsFavorite] = useState<boolean>(false)
-  
-  useEffect(() => {
-    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]")
-    setIsFavorite(favorites.includes(id))
-  }, [id])
-  
   const handleFavorites = () => {
-    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]")
-    
-    if (isFavorite) {
-      // Quitar de favoritos
-      const newFavorites = favorites.filter((favId: string) => favId !== id)
-      localStorage.setItem("favorites", JSON.stringify(newFavorites))
-      setIsFavorite(false)
-    } else {
-      // Agregar a favoritos
-      localStorage.setItem("favorites", JSON.stringify([...favorites, id]))
-      setIsFavorite(true)
-    }
-  }
+    return isFavorite(id) ? removeFavorite(id) : addFavorite(id);
+  };
 
   return (
-    <tr className="hover:bg-gray-700 transition-colors">      
+    <tr className="transition-colors hover:bg-gray-700">
       <td className="px-6 py-4 text-sm text-gray-400">{id}</td>
       <td className="px-6 py-4">
         <Link to={`/coin/${id}`} className="flex items-center gap-3">
@@ -39,25 +30,29 @@ const Coin = ({id, name, symbol, current_price, image, price_change_percentage_2
           </div>
         </Link>
       </td>
-      <td className="px-6 py-4 text-sm font-medium text-gray-100">{current_price}</td>
-      <td className="px-6 py-4 text-sm text-gray-400">{price_change_percentage_24h?.toFixed(2)}%</td>
+      <td className="px-6 py-4 text-sm font-medium text-gray-100">
+        {current_price}
+      </td>
+      <td className="px-6 py-4 text-sm text-gray-400">
+        {price_change_percentage_24h?.toFixed(2)}%
+      </td>
       <td className="px-6 py-4">
-        <button 
+        <button
           onClick={handleFavorites}
-          className="p-2 rounded-lg transition-all hover:bg-gray-600"
-          title={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+          className="p-2 transition-all rounded-lg hover:bg-gray-600"
+          title={isFavorite(id) ? "Quitar de favoritos" : "Agregar a favoritos"}
         >
-          <Star 
+          <Star
             className={`w-6 h-6 transition-colors ${
-              isFavorite 
-                ? "fill-yellow-400 stroke-yellow-400" 
+              isFavorite(id)
+                ? "fill-yellow-400 stroke-yellow-400"
                 : "fill-none stroke-gray-500"
             }`}
           />
         </button>
       </td>
     </tr>
-  )
-}
+  );
+};
 
-export default Coin
+export default Coin;
