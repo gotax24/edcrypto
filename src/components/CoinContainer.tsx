@@ -1,81 +1,108 @@
-import { useEffect, useState } from "react"
-import { COINGECKO_API_KEY, URL_API, URL_COINS } from "../constants/api"
-import { useParams } from "react-router-dom"
-import Spinner from "./Spinner"
-import { TrendingUp, TrendingDown, BarChart3, Activity, Coins, Calendar, ArrowUp, ArrowDown } from "lucide-react"
-import type { CoinFullInterface } from "../interfaces/Coin"
+import { useEffect, useState } from "react";
+import { COINGECKO_API_KEY, URL_API, URL_COINS } from "../constants/api";
+import { useParams } from "react-router-dom";
+import Spinner from "./Spinner";
+import {
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  Activity,
+  Coins,
+  Calendar,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
+import type { CoinFullInterface } from "../interfaces/Coin";
 
 const CoinContainer = () => {
+  const [coin, setCoin] = useState<CoinFullInterface | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
 
-  const [coin, setCoin] = useState<CoinFullInterface | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { id } = useParams()
-
-  
   useEffect(() => {
-    fetch(`${URL_API}${URL_COINS}&x_cg_demo_api_key=${COINGECKO_API_KEY}&ids=${id}`)
-    .then(response => response.json())
-    .then(data => {
-      setCoin(data[0])
-      setLoading(false)
+    fetch(
+      `${URL_API}${URL_COINS}&x_cg_demo_api_key=${COINGECKO_API_KEY}&ids=${id}`,
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setCoin(data[0]);
+        setLoading(false);
       })
-    .catch(error => {
-      console.error("Error al obtener los datos:", error)
-      setLoading(false)
-    })
-  }, [id])
-  
+      .catch((error) => {
+        console.error("Error al obtener los datos:", error);
+        setLoading(false);
+      });
+  }, [id]);
+
   if (loading) {
-    return <Spinner />
+    return <Spinner />;
   }
 
   if (!coin) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-400 text-lg">No se encontró información de la moneda</p>
+        <p className="text-gray-400 text-lg">
+          No se encontró información de la moneda
+        </p>
       </div>
-    )
+    );
   }
 
-  const isPriceUp = coin.price_change_percentage_24h >= 0
+  const isPriceUp = coin.price_change_percentage_24h >= 0;
   const formatNumber = (num: number | null) => {
-    if (num === null || num === undefined) return "N/A"
-    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(num)
-  }
+    if (num === null || num === undefined) return "N/A";
+    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(
+      num,
+    );
+  };
   const formatCurrency = (num: number | null) => {
-    if (num === null || num === undefined) return "N/A"
-    return new Intl.NumberFormat("en-US", { 
-      style: "currency", 
+    if (num === null || num === undefined) return "N/A";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
       currency: "USD",
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2 
-    }).format(num)
-  }
+      maximumFractionDigits: 2,
+    }).format(num);
+  };
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A"
+    if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("es-ES", {
       year: "numeric",
       month: "long",
-      day: "numeric"
-    })
-  }
-  
+      day: "numeric",
+    });
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4">
       {/* Header Section */}
       <div className="bg-gray-800 rounded-lg p-8 mb-6">
         <div className="flex items-center gap-6 mb-6">
-          <img src={coin.image} alt={coin.name} className="w-20 h-20 rounded-full" />
+          <img
+            src={coin.image}
+            alt={coin.name}
+            className="w-20 h-20 rounded-full"
+          />
           <div className="flex-1">
             <h1 className="text-4xl font-bold text-gray-100">{coin.name}</h1>
             <p className="text-xl text-gray-500 uppercase">{coin.symbol}</p>
           </div>
           <div className="text-right">
-            <div className="text-4xl font-bold text-gray-100">{formatCurrency(coin.current_price)}</div>
-            <div className={`flex items-center justify-end gap-2 mt-2 text-lg font-semibold ${isPriceUp ? "text-green-500" : "text-red-500"}`}>
-              {isPriceUp ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+            <div className="text-4xl font-bold text-gray-100">
+              {formatCurrency(coin.current_price)}
+            </div>
+            <div
+              className={`flex items-center justify-end gap-2 mt-2 text-lg font-semibold ${isPriceUp ? "text-green-500" : "text-red-500"}`}
+            >
+              {isPriceUp ? (
+                <TrendingUp size={20} />
+              ) : (
+                <TrendingDown size={20} />
+              )}
               <span>{coin.price_change_percentage_24h?.toFixed(2)}%</span>
-              <span className="text-gray-400 text-sm">({formatCurrency(coin.price_change_24h)})</span>
+              <span className="text-gray-400 text-sm">
+                ({formatCurrency(coin.price_change_24h)})
+              </span>
             </div>
           </div>
         </div>
@@ -88,8 +115,12 @@ const CoinContainer = () => {
             <BarChart3 className="text-blue-400" size={24} />
             <h3 className="text-sm font-medium text-gray-400">Market Cap</h3>
           </div>
-          <p className="text-2xl font-bold text-gray-100">{formatCurrency(coin.market_cap)}</p>
-          <p className={`text-sm mt-1 ${coin.market_cap_change_percentage_24h >= 0 ? "text-green-500" : "text-red-500"}`}>
+          <p className="text-2xl font-bold text-gray-100">
+            {formatCurrency(coin.market_cap)}
+          </p>
+          <p
+            className={`text-sm mt-1 ${coin.market_cap_change_percentage_24h >= 0 ? "text-green-500" : "text-red-500"}`}
+          >
             {coin.market_cap_change_percentage_24h?.toFixed(2)}% (24h)
           </p>
         </div>
@@ -99,23 +130,33 @@ const CoinContainer = () => {
             <Activity className="text-blue-400" size={24} />
             <h3 className="text-sm font-medium text-gray-400">Volume 24h</h3>
           </div>
-          <p className="text-2xl font-bold text-gray-100">{formatCurrency(coin.total_volume)}</p>
+          <p className="text-2xl font-bold text-gray-100">
+            {formatCurrency(coin.total_volume)}
+          </p>
         </div>
 
         <div className="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-colors">
           <div className="flex items-center gap-3 mb-2">
             <Coins className="text-blue-400" size={24} />
-            <h3 className="text-sm font-medium text-gray-400">Market Cap Rank</h3>
+            <h3 className="text-sm font-medium text-gray-400">
+              Market Cap Rank
+            </h3>
           </div>
-          <p className="text-2xl font-bold text-gray-100">#{coin.market_cap_rank || "N/A"}</p>
+          <p className="text-2xl font-bold text-gray-100">
+            #{coin.market_cap_rank || "N/A"}
+          </p>
         </div>
 
         <div className="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-colors">
           <div className="flex items-center gap-3 mb-2">
             <Calendar className="text-blue-400" size={24} />
-            <h3 className="text-sm font-medium text-gray-400">Fully Diluted Valuation</h3>
+            <h3 className="text-sm font-medium text-gray-400">
+              Fully Diluted Valuation
+            </h3>
           </div>
-          <p className="text-2xl font-bold text-gray-100">{formatCurrency(coin.fully_diluted_valuation)}</p>
+          <p className="text-2xl font-bold text-gray-100">
+            {formatCurrency(coin.fully_diluted_valuation)}
+          </p>
         </div>
       </div>
 
@@ -129,15 +170,21 @@ const CoinContainer = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-gray-400">Price:</span>
-              <span className="text-lg font-semibold text-gray-100">{formatCurrency(coin.ath)}</span>
+              <span className="text-lg font-semibold text-gray-100">
+                {formatCurrency(coin.ath)}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400">Change:</span>
-              <span className="text-lg font-semibold text-red-500">{coin.ath_change_percentage?.toFixed(2)}%</span>
+              <span className="text-lg font-semibold text-red-500">
+                {coin.ath_change_percentage?.toFixed(2)}%
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400">Date:</span>
-              <span className="text-sm text-gray-100">{formatDate(coin.ath_date)}</span>
+              <span className="text-sm text-gray-100">
+                {formatDate(coin.ath_date)}
+              </span>
             </div>
           </div>
         </div>
@@ -150,15 +197,21 @@ const CoinContainer = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-gray-400">Price:</span>
-              <span className="text-lg font-semibold text-gray-100">{formatCurrency(coin.atl)}</span>
+              <span className="text-lg font-semibold text-gray-100">
+                {formatCurrency(coin.atl)}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400">Change:</span>
-              <span className="text-lg font-semibold text-green-500">+{coin.atl_change_percentage?.toFixed(2)}%</span>
+              <span className="text-lg font-semibold text-green-500">
+                +{coin.atl_change_percentage?.toFixed(2)}%
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-400">Date:</span>
-              <span className="text-sm text-gray-100">{formatDate(coin.atl_date)}</span>
+              <span className="text-sm text-gray-100">
+                {formatDate(coin.atl_date)}
+              </span>
             </div>
           </div>
         </div>
@@ -166,23 +219,29 @@ const CoinContainer = () => {
 
       {/* 24h Price Range */}
       <div className="bg-gray-800 rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-bold text-gray-100 mb-4">24h Price Range</h2>
+        <h2 className="text-xl font-bold text-gray-100 mb-4">
+          24h Price Range
+        </h2>
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div>
               <span className="text-sm text-gray-400">Low</span>
-              <p className="text-xl font-bold text-gray-100">{formatCurrency(coin.low_24h)}</p>
+              <p className="text-xl font-bold text-gray-100">
+                {formatCurrency(coin.low_24h)}
+              </p>
             </div>
             <div className="text-right">
               <span className="text-sm text-gray-400">High</span>
-              <p className="text-xl font-bold text-gray-100">{formatCurrency(coin.high_24h)}</p>
+              <p className="text-xl font-bold text-gray-100">
+                {formatCurrency(coin.high_24h)}
+              </p>
             </div>
           </div>
           <div className="relative h-2 bg-gray-700 rounded-full overflow-hidden">
-            <div 
+            <div
               className="absolute h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"
-              style={{ 
-                width: `${((coin.current_price - coin.low_24h) / (coin.high_24h - coin.low_24h)) * 100}%` 
+              style={{
+                width: `${((coin.current_price - coin.low_24h) / (coin.high_24h - coin.low_24h)) * 100}%`,
               }}
             />
           </div>
@@ -191,22 +250,42 @@ const CoinContainer = () => {
 
       {/* Supply Information */}
       <div className="bg-gray-800 rounded-lg p-6">
-        <h2 className="text-xl font-bold text-gray-100 mb-4">Supply Information</h2>
+        <h2 className="text-xl font-bold text-gray-100 mb-4">
+          Supply Information
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Circulating Supply</h3>
-            <p className="text-xl font-bold text-gray-100">{formatNumber(coin.circulating_supply)}</p>
-            <p className="text-xs text-gray-500 mt-1 uppercase">{coin.symbol}</p>
+            <h3 className="text-sm font-medium text-gray-400 mb-2">
+              Circulating Supply
+            </h3>
+            <p className="text-xl font-bold text-gray-100">
+              {formatNumber(coin.circulating_supply)}
+            </p>
+            <p className="text-xs text-gray-500 mt-1 uppercase">
+              {coin.symbol}
+            </p>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Total Supply</h3>
-            <p className="text-xl font-bold text-gray-100">{formatNumber(coin.total_supply)}</p>
-            <p className="text-xs text-gray-500 mt-1 uppercase">{coin.symbol}</p>
+            <h3 className="text-sm font-medium text-gray-400 mb-2">
+              Total Supply
+            </h3>
+            <p className="text-xl font-bold text-gray-100">
+              {formatNumber(coin.total_supply)}
+            </p>
+            <p className="text-xs text-gray-500 mt-1 uppercase">
+              {coin.symbol}
+            </p>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Max Supply</h3>
-            <p className="text-xl font-bold text-gray-100">{coin.max_supply ? formatNumber(coin.max_supply) : "∞"}</p>
-            <p className="text-xs text-gray-500 mt-1 uppercase">{coin.max_supply ? coin.symbol : "Unlimited"}</p>
+            <h3 className="text-sm font-medium text-gray-400 mb-2">
+              Max Supply
+            </h3>
+            <p className="text-xl font-bold text-gray-100">
+              {coin.max_supply ? formatNumber(coin.max_supply) : "∞"}
+            </p>
+            <p className="text-xs text-gray-500 mt-1 uppercase">
+              {coin.max_supply ? coin.symbol : "Unlimited"}
+            </p>
           </div>
         </div>
       </div>
@@ -216,7 +295,7 @@ const CoinContainer = () => {
         Last updated: {formatDate(coin.last_updated)}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CoinContainer
+export default CoinContainer;

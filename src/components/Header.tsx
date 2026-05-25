@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
 const Header = () => (
   <header className="bg-gray-900 text-white py-4 px-6 shadow-lg">
@@ -9,7 +9,7 @@ const Header = () => (
           <span className="text-blue-400">App</span>
         </Link>
       </div>
-      
+
       <nav className="flex gap-6">
         <Link to="/" className="hover:text-blue-400 transition-colors">
           Overview
@@ -20,6 +20,6 @@ const Header = () => (
       </nav>
     </div>
   </header>
-)
+);
 
-export default Header
+export default Header;
