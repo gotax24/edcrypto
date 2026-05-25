@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FavoritesContext } from "./FavoriteContext";
 
 const FavoriteProvider = ({ children }: { children: React.ReactNode }) => {
@@ -19,7 +19,13 @@ const FavoriteProvider = ({ children }: { children: React.ReactNode }) => {
   //    React necesita un NUEVO array (nueva referencia en memoria)
   //    para detectar el cambio. Por eso usamos spread (...):
   //    creamos un array NUEVO con todos los viejos + el nuevo.
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    return JSON.parse(localStorage.getItem("favorites") || "[]");
+  });
+
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
 
   const addFavorite = (id: string) => {
     setFavorites([...favorites, id]);
