@@ -239,7 +239,7 @@ const CoinContainer = () => {
           </div>
           <div className="relative h-2 bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="absolute h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"
+              className="absolute h-full bg-linear-to-r from-blue-400 to-blue-600 rounded-full"
               style={{
                 width: `${((coin.current_price - coin.low_24h) / (coin.high_24h - coin.low_24h)) * 100}%`,
               }}
