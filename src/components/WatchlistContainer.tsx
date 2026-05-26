@@ -1,10 +1,10 @@
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CoinInterface } from "../interfaces/Coin";
 import CoinsTable from "./CoinsTable";
 import CoinsNotFound from "./CoinsNotFound";
 import Spinner from "./Spinner";
 import { COINGECKO_API_KEY, URL_API, URL_COINS } from "../constants/api";
-import { FavoritesContext } from "../context/FavoriteContext";
+import { useFavoriteStore } from "../store/favoriteStore";
 
 const WatchlistContainer = () => {
   const [coinsList, setCoinsList] = useState<CoinInterface[]>([]);
@@ -14,7 +14,7 @@ const WatchlistContainer = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const searchInput = useRef<HTMLInputElement>(null);
-  const { favorites } = use(FavoritesContext);
+  const { favorites } = useFavoriteStore();
 
   useEffect(() => {
     fetch(

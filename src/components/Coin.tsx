@@ -1,8 +1,7 @@
-import { use } from "react";
 import type { CoinInterface } from "../interfaces/Coin";
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
-import { FavoritesContext } from "../context/FavoriteContext";
+import { useFavoriteStore } from "../store/favoriteStore";
 
 const Coin = ({
   id,
@@ -12,7 +11,7 @@ const Coin = ({
   image,
   price_change_percentage_24h,
 }: CoinInterface) => {
-  const { isFavorite, addFavorite, removeFavorite } = use(FavoritesContext);
+  const { isFavorite, addFavorite, removeFavorite } = useFavoriteStore();
 
   const handleFavorites = () => {
     return isFavorite(id) ? removeFavorite(id) : addFavorite(id);

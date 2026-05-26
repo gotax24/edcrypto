@@ -4,11 +4,11 @@ import CoinsContainer from "./components/CoinsContainer";
 import NotFound from "./components/NotFound";
 import WatchlistContainer from "./components/WatchlistContainer";
 import CoinContainer from "./components/CoinContainer";
-import FavoriteProvider from "./context/FavoriteProvider";
+//import FavoriteProvider from "./context/FavoriteProvider";
 
 const App = () => {
   return (
-    <FavoriteProvider>
+    //<FavoriteProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -19,7 +19,7 @@ const App = () => {
           </Route>
         </Routes>
       </BrowserRouter>
-    </FavoriteProvider>
+    //</FavoriteProvider>
   );
 };
 
