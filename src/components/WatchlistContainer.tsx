@@ -14,7 +14,7 @@ const WatchlistContainer = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const searchInput = useRef<HTMLInputElement>(null);
-  const { favorites } = useFavoriteStore();
+  const { favorites, clearFavorites } = useFavoriteStore();
 
   useEffect(() => {
     fetch(
@@ -43,7 +43,7 @@ const WatchlistContainer = () => {
   };
 
   const handleClearFavorites = () => {
-    localStorage.removeItem("favorites");
+    clearFavorites();
     setCoinsList([]);
     setCoinsListOriginal([]);
   };

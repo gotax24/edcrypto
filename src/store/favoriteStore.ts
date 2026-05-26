@@ -12,6 +12,7 @@ interface FavoriteStore {
   removeFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
   countFavorites: () => number;
+  clearFavorites: () => void;
 }
 
 // ─── create ───────────────────────────────────────────────────────────
@@ -55,6 +56,7 @@ export const useFavoriteStore = create<FavoriteStore>()(
       // Si usáramos set(), causaría un re-render al pedo.
       isFavorite: (id: string) => get().favorites.includes(id),
       countFavorites: () => get().favorites.length,
+      clearFavorites: () => set({ favorites: [] }),
     }),
     { name: "favorite" },
   ),
