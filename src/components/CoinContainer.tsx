@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import { COINGECKO_API_KEY, URL_API, URL_COINS } from "../constants/api";
 import { useParams } from "react-router-dom";
 import Spinner from "./Spinner";
+import { useCoin } from "../hooks/useCoin";
 import {
   TrendingUp,
   TrendingDown,
@@ -12,30 +11,23 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
-import type { CoinFullInterface } from "../interfaces/Coin";
 
 const CoinContainer = () => {
-  const [coin, setCoin] = useState<CoinFullInterface | null>(null);
-  const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const { data: coin, isLoading, isRefetching, error } = useCoin(id!);
 
-  useEffect(() => {
-    fetch(
-      `${URL_API}${URL_COINS}&x_cg_demo_api_key=${COINGECKO_API_KEY}&ids=${id}`,
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setCoin(data[0]);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error al obtener los datos:", error);
-        setLoading(false);
-      });
-  }, [id]);
-
-  if (loading) {
+  if (isLoading) {
     return <Spinner />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-red-500 text-lg">
+          Error al cargar la moneda: {error.message}
+        </p>
+      </div>
+    );
   }
 
   if (!coin) {
@@ -294,6 +286,14 @@ const CoinContainer = () => {
       <div className="mt-6 text-center text-sm text-gray-500">
         Last updated: {formatDate(coin.last_updated)}
       </div>
+
+      {/* Mini spinner de refetching — aparece cuando se está actualizando en background */}
+      {isRefetching && (
+        <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-gray-800/80 backdrop-blur-sm px-3 py-2 rounded-lg shadow-lg">
+          <div className="w-5 h-5 border-[3px] border-gray-600 border-t-blue-500 rounded-full animate-spin" />
+          <span className="text-xs text-gray-300">Actualizando...</span>
+        </div>
+      )}
     </div>
   );
 };
